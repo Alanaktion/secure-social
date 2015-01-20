@@ -60,7 +60,6 @@
 	</div>
 	<include href="block/scripts.html" />
 	<script>
-	var key;
 	$(document).ready(function() {
 
 		// Generate key
@@ -75,8 +74,7 @@
 				$('#key-public').val(data.toPublic().armor());
 				$('#key-private').val(data.armor());
 			}).catch(function(err) {
-				$('#key-public,#key-private').val("Error!");
-				console.log(err);
+				$('#key-public,#key-private').val(err);
 			});
 			e.preventDefault();
 		});
@@ -89,8 +87,7 @@
 			openpgp.encryptMessage(publicKey.keys, msg).then(function(data) {
 				$('#msg-out').val(data);
 			}).catch(function(err) {
-				$('#msg-out').val("Error!");
-				console.log(err);
+				$('#msg-out').val(err);
 			});
 		});
 
@@ -103,8 +100,7 @@
 			openpgp.decryptMessage(privateKey, msg).then(function(data) {
 				$('#msg-out').val(data);
 			}).catch(function(err) {
-				$('#msg-out').val("Error!");
-				console.log(err);
+				$('#msg-out').val(err);
 			});
 		});
 

@@ -10,7 +10,7 @@ class Index {
 
 	public function minify($f3, $params) {
 		$f3->set("UI", "assets/" . $params["type"] . "/");
-		echo Web::instance()->minify($params["files"]);
+		echo \Web::instance()->minify($params["files"]);
 	}
 
 }

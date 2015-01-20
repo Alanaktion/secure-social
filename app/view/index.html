@@ -14,7 +14,7 @@
 	<include href="block/nav.html" />
 	<div class="container">
 
-		<h2>Generate Key</h2>
+		<h2>Generate PGP Keypair</h2>
 		<form class="form-inline">
 			<div class="form-group">
 				<label for="numBits">Key Size</label>
@@ -30,9 +30,7 @@
 			</div>
 			<button class="btn btn-primary btn-sm" type="submit">Generate</button>
 		</form>
-
 		<br>
-
 		<div class="row">
 			<div class="col-sm-6">
 				<textarea class="form-control input-sm" id="key-public"></textarea>
@@ -42,7 +40,7 @@
 			</div>
 		</div>
 
-		<h2>Encrypt/Decrypt Messages</h2>
+		<h2>Encrypt/Decrypt Messages <small>Using <abbr title="Pretty Good Privacy">PGP</abbr></small></h2>
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="form-group">
@@ -57,7 +55,31 @@
 			</div>
 		</div>
 
+		<h2>Symmetrical Encryption <small>Using <abbr title="Stanford Javascript Crypto Library">SJCL</abbr></small></h2>
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="symKey">Encryption Key</label>
+				<input class="form-control input-sm" name="symKey" id="symKey">
+			</div>
+			<button class="btn btn-default btn-sm" type="button" id="btn-symKey">Generate</button>
+		</form>
+		<br>
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="form-group">
+					<textarea class="form-control input-sm" id="msg-sym-in"></textarea>
+				</div>
+				<button class="btn btn-default btn-sm" type="button" id="btn-sym-encrypt">Encrypt</button>
+				<button class="btn btn-default btn-sm" type="button" id="btn-sym-decrypt">Decrypt</button>
+			</div>
+			<div class="col-sm-6">
+				<textarea class="form-control input-sm" id="msg-sym-out" placeholder="Output" readonly></textarea>
+			</div>
+		</div>
+
+		<br>
 	</div>
+
 	<include href="block/scripts.html" />
 	<script>
 	$(document).ready(function() {
@@ -102,6 +124,27 @@
 			}).catch(function(err) {
 				$('#msg-out').val(err);
 			});
+		});
+
+		// Generate a symetrical encryption key
+		$('#btn-symKey').click(function(e) {
+			var bytes = openpgp.crypto.random.getRandomBytes(128);
+			var hash = openpgp.crypto.hash.digest(openpgp.enums.hash.sha256, bytes);
+			var key = btoa(hash).substr(0, 24);
+			$('#symKey').val(key);
+		});
+
+		// Symmetrically encrypt message
+		$('#btn-sym-encrypt').click(function(e) {
+			var result = sjcl.encrypt($('#symKey').val(), $('#msg-sym-in').val());
+			console.log(result);
+			$('#msg-sym-out').val(btoa(result));
+		});
+
+		// Decrypt symmetrically encrypted message
+		$('#btn-sym-decrypt').click(function(e) {
+			var result = sjcl.decrypt($('#symKey').val(), atob($('#msg-sym-in').val()));
+			$('#msg-sym-out').val(result);
 		});
 
 	});

@@ -8,6 +8,10 @@ class Index {
 		echo \Template::instance()->render("index.html");
 	}
 
+	public function test() {
+		echo \Template::instance()->render("test.html");
+	}
+
 	public function minify($f3, $params) {
 		$f3->set("UI", "assets/" . $params["type"] . "/");
 		echo \Web::instance()->minify($params["files"]);

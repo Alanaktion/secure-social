@@ -44,7 +44,7 @@ var App = {
 		 */
 		square: function(img, dim, type) {
 			var canvas = document.createElement('canvas'),
-				ctx = canvas,
+				ctx = canvas.getContext('2d'),
 				x = 0,
 				y = 0;
 
@@ -60,7 +60,8 @@ var App = {
 			// Crop
 			canvas.width = dim;
 			canvas.height = dim;
-			canvas.getContext('2d').drawImage(img, x, y);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.drawImage(img, x, y);
 
 			switch(type) {
 				case 'string':
@@ -84,7 +85,9 @@ var App = {
 		 */
 		scale: function(img, w, h, type) {
 			var canvas = document.createElement('canvas'),
-				oc = document.createElement('canvas');
+				ctx = canvas.getContext('2d'),
+				oc = document.createElement('canvas'),
+				otx = oc.getContext('2d');
 
 			if(w) {
 				canvas.width = w;
@@ -96,9 +99,11 @@ var App = {
 
 			oc.width = img.width * 0.5;
 			oc.height = img.height * 0.5;
-			oc.getContext('2d').drawImage(img, 0, 0, oc.width, oc.height);
+			otx.clearRect(0, 0, oc.width, oc.height);
+			otx.drawImage(img, 0, 0, oc.width, oc.height);
 
-			canvas.getContext('2d').drawImage(oc, 0, 0, oc.width, oc.height,
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.drawImage(oc, 0, 0, oc.width, oc.height,
 					0, 0, canvas.width, canvas.height);
 
 			switch(type) {
@@ -131,6 +136,7 @@ var App = {
 		toImage: function(canvas) {
 			var img = new Image();
 			img.src = App.img.toURL(canvas);
+			var h = img.height;
 			return img;
 		},
 

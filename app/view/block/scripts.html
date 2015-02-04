@@ -1,7 +1,14 @@
 <script>var home = '{{ @HOME }}';</script>
-<script src="{{ @HOME }}assets/js/jquery.min.js"></script>
-<script src="{{ @HOME }}assets/js/bootstrap.min.js"></script>
-<script src="{{ @HOME }}assets/js/openpgp.min.js"></script>
-<script src="{{ @HOME }}assets/js/sjcl.js"></script>
-<script src="{{ @HOME }}assets/js/app.js"></script>
+<check if="{{ @DEBUG }}">
+	<true>
+		<script src="{{ @HOME }}assets/js/vendor/jquery.min.js"></script>
+		<script src="{{ @HOME }}assets/js/vendor/bootstrap.min.js"></script>
+		<script src="{{ @HOME }}assets/js/vendor/openpgp.min.js"></script>
+		<script src="{{ @HOME }}assets/js/vendor/sjcl.js"></script>
+		<script src="{{ @HOME }}assets/js/app.js"></script>
+	</true>
+	<false>
+		<script src="{{ @HOME }}minify/js-vendor/jquery.min.js,bootstrap.min.js,openpgp.min.js,sjcl.js,app.js"></script>
+	</false>
+</check>
 <script>$(document).ready(App.init);</script>

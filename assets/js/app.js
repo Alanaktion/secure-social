@@ -13,20 +13,40 @@ var App = {
 			openpgp.config.show_version = false;
 			openpgp.config.show_comment = false;
 		} else {
-			$('.alert-error')
-				.text('Sorry, your browser is not supported. We recommend upgrading to the latest Firefox.')
-				.show();
+			App.msg.error('Sorry, your browser is not supported. We recommend upgrading to the latest Firefox release.');
 			return;
 		}
-		if(window.File && window.FileReader && window.FileList && window.Blob) {
-			// File stuff is supported, neat.
-		} else {
+		if(!(window.File && window.FileReader && window.FileList && window.Blob)) {
 			App.file.disable();
-			console.log("HTML5 File API is not available, no support for image uploading.");
+			console.warn("HTML5 File API is not available, no support for image uploading.");
 		}
 		if(!document.createElement('canvas').getContext) {
-			console.log("Canvas is not available, no support for image display.");
+			console.warn("Canvas is not available, no support for image display.");
 		}
+	},
+
+	/**
+	 * Message display helper functions
+	 * @type {Object}
+	 */
+	msg: {
+
+		/**
+		 * Display an error message
+		 * @param {string} str
+		 */
+		error: function(str) {
+			$('.alert-error').show().find('p').text(str);
+		},
+
+		/**
+		 * Display a success message
+		 * @param {string} str
+		 */
+		success: function(str) {
+			$('.alert-success').show().find('p').text(str);
+		},
+
 	},
 
 	/**

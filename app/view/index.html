@@ -6,6 +6,34 @@
 <body>
 	<include href="block/nav.html" />
 
+	<div class="jumbotron jt-top">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-8">
+					<h1>{{ @PACKAGE }}</h1>
+					<p>A simple, secure way to connect online</p>
+				</div>
+				<div class="col-sm-4">
+					<div class="hidden-xs text-right" style="padding-top: 40px">
+						<a href="{{ @HOME }}join" class="btn btn-primary btn-lg">Create Account</a>
+					</div>
+					<div class="visible-xs text-center" style="padding-top: 5px;">
+						<a href="{{ @HOME }}join" class="btn btn-primary">Create Account</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<p class="lead">A few things that make {{ @PACKAGE }} different:</p>
+		<ul>
+			<li>Client-side 2048-bit PGP encryption</li>
+			<li>No tracking scripts</li>
+			<li>Built entirely on Open Source</li>
+		</ul>
+	</div>
+
 	<include href="block/scripts.html" />
 </body>
 </html>

@@ -9,9 +9,29 @@
 			</button>
 			<a class="navbar-brand" href="{{ @HOME }}">{{ @PACKAGE }}</a>
 		</div>
+		<div class="collapse navbar-collapse" id="nav">
+			<check if="{{ empty(@current_user) }}">
+				<form class="navbar-form navbar-right" id="frm-auth" method="post" action="{{ @HOME }}auth">
+					<div class="form-group">
+						<input type="text" name="username" class="form-control" placeholder="Username/Fingerprint">
+					</div>
+					<div class="form-group">
+						<input type="password" name="password" class="form-control" placeholder="Passphrase">
+					</div>
+					<button type="submit" class="btn btn-default">Sign In</button>
+				</form>
+			</check>
+		</div>
 	</div>
 </nav>
+
 <div class="container">
-	<div class="alert alert-success" style="display: none;"></div>
-	<div class="alert alert-danger" style="display: none;"></div>
+	<div class="alert alert-success alert-dismissible" style="display: none;">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<p></p>
+	</div>
+	<div class="alert alert-danger alert-dismissible" style="display: none;">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<p></p>
+	</div>
 </div>

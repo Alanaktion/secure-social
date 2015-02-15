@@ -2,16 +2,24 @@
 <html>
 <head>
 	<include href="block/head.html" />
+	<style type="text/css">
+	textarea.form-control {
+		font-family: monospace;
+		font-size: 12px;
+		height: 240px;
+		overflow-y: auto;
+	}
+	</style>
 </head>
 <body>
 	<include href="block/nav.html" />
 
 	<div class="container">
 		<div class="row">
-			<div class="col-md-8 col-md-offset-2">
+			<div class="col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
 				<div class="well clearfix">
 					<h1>Create Account</h1>
-					<form method="post" action="{{ @HOME }}join" role="form">
+					<form id="frm-signup" method="post" action="{{ @HOME }}join" role="form">
 						<input name="timezone" id="timezone" value="" type="hidden">
 						<div class="row">
 							<div class="form-group col-sm-6">
@@ -26,18 +34,25 @@
 						<div class="form-group">
 							<label class="sr-only" for="signup_email">Username</label>
 							<input class="form-control" name="email" id="signup_username" placeholder="Username" required>
-							<span class="help-block">Your username will not be encrypted. If you want to remain anonymous, choose a name carefully.</span>
+							<span class="help-block">Your name and username will not be encrypted.</span>
 						</div>
 						<div class="form-group">
 							<label class="sr-only" for="signup_password">Passphrase</label>
 							<input class="form-control" name="password" id="signup_password" placeholder="Passphrase" required type="password">
 						</div>
-						<div class="form-group">
-							<label class="sr-only" for="bdate">Birth Date</label>
-							<input class="form-control" name="bdate" id="bdate" placeholder="Birth Date" required data-provide="datepicker" data-date-format="yyyy-mm-dd">
+						<p id="keyGenerating" style="display: none;">Generating keys&hellip;</p>
+						<div id="keyResult" style="display: none;">
+							<input id="signup_fingerprint" name="signup_fingerprint" type="hidden">
+							<p>Your key with fingerprint <code id="fingerprint"></code> has been generated:</p>
+							<textarea id="signup_pgpkey" class="form-control" name="signup_pgpkey" readonly></textarea>
+							<input id="signup_symkey" class="form-control" name="signup_symkey" readonly>
+							<br>
 						</div>
-						<button type="submit" class="btn btn-primary">Create Account</button>
-						&ensp;Clicking will generate a secure key for your account, your browser may lag.
+						<div class="text-right">
+							<button type="submit" class="btn btn-primary">
+								Continue&ensp;<span class="glyphicon glyphicon-chevron-right"></span>
+							</button>
+						</div>
 					</form>
 				</div>
 			</div>
@@ -45,5 +60,47 @@
 	</div>
 
 	<include href="block/scripts.html" />
+	<script type="text/javascript">
+	$(document).ready(function() {
+		var page = 1;
+		$('#frm-signup').submit(function(e) {
+			if(page == 1) {
+				page = 2;
+				e.preventDefault();
+
+				$('#frm-signup .form-group').hide();
+				$('#frm-signup .btn-primary')
+					.text('Complete Signup')
+					.prop('disabled', true);
+
+				$('#keyGenerating').show();
+
+				var options = {
+					numBits: 2048,
+					userId: $('#signup_username').val(),
+					passphrase: $('#signup_password').val(),
+				};
+				openpgp.key.generate(options).then(function(data) {
+					$('#keyGenerating').hide();
+					$('#keyResult').show();
+
+					$('#fingerprint').text(data.primaryKey.fingerprint);
+					$('#signup_fingerprint').val(data.primaryKey.fingerprint);
+					$('#signup_pgpkey').val(data.armor());
+
+					// Generate and display symmetric key
+					var bytes = openpgp.crypto.random.getRandomBytes(128),
+						hash = openpgp.crypto.hash.digest(openpgp.enums.hash.sha512, bytes),
+						key = btoa(hash);
+					$('#signup_symkey').val(key);
+
+					$('#frm-signup .btn-primary').prop('disabled', false);
+				}).catch(function(err) {
+					$('#keyResult textarea').val(err);
+				});
+			}
+		});
+	});
+	</script>
 </body>
 </html>

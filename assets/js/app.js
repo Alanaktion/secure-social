@@ -9,7 +9,7 @@ var App = {
 	 */
 	init: function() {
 		if(window.Crypto && window.Promise && window.localStorage) {
-			openpgp.initWorker(home + 'assets/js/openpgp.worker.min.js');
+			openpgp.initWorker(home + 'assets/js/vendor/openpgp.worker.min.js');
 			openpgp.config.show_version = false;
 			openpgp.config.show_comment = false;
 		} else {

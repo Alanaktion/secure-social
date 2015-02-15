@@ -48,14 +48,14 @@
 				<div class="form-group">
 					<textarea class="form-control input-sm" id="msg-in" placholder="Input"></textarea>
 				</div>
-				<button class="btn btn-primary btn-sm" type="button" id="btn-encrypt">Encrypt</button>
-				<button class="btn btn-default btn-sm" type="button" id="btn-decrypt">Decrypt</button>
-				&ensp;These actions will use the keys above the message.
 			</div>
 			<div class="col-sm-6">
 				<textarea class="form-control input-sm" id="msg-out" placeholder="Output" readonly></textarea>
 			</div>
 		</div>
+		<button class="btn btn-primary btn-sm" type="button" id="btn-encrypt">Sign &amp; Encrypt</button>
+		<button class="btn btn-default btn-sm" type="button" id="btn-decrypt">Decrypt &amp; Verify</button>
+		&ensp;These actions will use the keys above the message.
 
 		<h2>Symmetrical Encryption <small>Using <abbr title="Stanford Javascript Crypto Library">SJCL</abbr></small></h2>
 		<form class="form-inline">
@@ -120,7 +120,10 @@
 			$('#msg-out').val("Encrypting...");
 			var msg = $('#msg-in').val();
 			var publicKey = openpgp.key.readArmored($('#key-public').val());
-			openpgp.encryptMessage(publicKey.keys, msg).then(function(data) {
+			var privateKey = openpgp.key.readArmored($('#key-private').val()).keys[0];
+			privateKey.decrypt($('#passphrase').val());
+
+			openpgp.signAndEncryptMessage(publicKey.keys, privateKey, msg).then(function(data) {
 				$('#msg-out').val(data);
 			}).catch(function(err) {
 				$('#msg-out').val(err);
@@ -131,10 +134,18 @@
 		$('#btn-decrypt').click(function(e) {
 			$('#msg-out').val("Decrypting...");
 			var msg = openpgp.message.readArmored($('#msg-in').val());
+			var publicKey = openpgp.key.readArmored($('#key-public').val());
 			var privateKey = openpgp.key.readArmored($('#key-private').val()).keys[0];
 			privateKey.decrypt(prompt('Enter passphrase for key:'));
-			openpgp.decryptMessage(privateKey, msg).then(function(data) {
-				$('#msg-out').val(data);
+
+			openpgp.decryptAndVerifyMessage(privateKey, publicKey.keys, msg).then(function(data) {
+				var verifyResult = '';
+				if(data.signatures[0].valid) {
+					verifyResult = '[Message Verified]';
+				} else {
+					verifyResult = '[Message Verification Failed!]';
+				}
+				$('#msg-out').val(data.text + '\n' + verifyResult);
 			}).catch(function(err) {
 				$('#msg-out').val(err);
 			});

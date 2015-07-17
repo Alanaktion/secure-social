@@ -65,6 +65,7 @@
 					<button class="btn btn-primary btn-sm" type="button" id="btn-symKey">Generate</button>
 				</div>
 			</div>
+			<br>
 			<textarea class="form-control input-sm" name="symKey" id="symKey"></textarea>
 		</form>
 		<br>
@@ -157,7 +158,8 @@
 		$('#btn-symKey').click(function(e) {
 			var bytes = openpgp.crypto.random.getRandomBytes(2048);
 			// var hash = openpgp.crypto.hash.digest(openpgp.enums.hash.sha256, bytes);
-			var key = btoa(hash); //.substr(0, 24);
+			// var key = btoa(hash).substr(0, 24);
+			var key = btoa(bytes);
 			$('#symKey').val(key);
 		});
 

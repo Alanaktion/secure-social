@@ -20,34 +20,32 @@
 		<form class="form-inline">
 			<div class="form-group">
 				<label for="numBits">Key Size</label>
-				<input class="form-control input-sm" name="numBits" id="numBits" style="width: 90px;" value="1024" type="number" step="512" min="512" max="2048" required>
+				<input class="form-control input-sm" name="numBits" id="numBits" style="width: 90px;" value="2048" type="number" step="1024" min="1024" max="4096" required>
 			</div>
 			<div class="form-group">
 				<label for="userId">Identity</label>
-				<input class="form-control input-sm" name="userId" id="userId" value="Test &lt;test@example.org&gt;" required>
+				<input class="form-control input-sm" name="userId" id="userId" value="Test &lt;test@example.org&gt;" type="text" required>
 			</div>
 			<div class="form-group">
 				<label for="passphrase">Passphrase</label>
-				<input class="form-control input-sm" name="passphrase" id="passphrase" value="letmein" required>
+				<input class="form-control input-sm" name="passphrase" id="passphrase" value="" type="password" required>
 			</div>
 			<button class="btn btn-primary btn-sm" type="submit">Generate</button>
 		</form>
 		<br>
 		<div class="row">
 			<div class="col-sm-6">
-				<textarea class="form-control input-sm" id="key-public"></textarea>
+				<textarea class="form-control input-sm" id="key-public" placeholder="Public Key"></textarea>
 			</div>
 			<div class="col-sm-6">
-				<textarea class="form-control input-sm" id="key-private"></textarea>
+				<textarea class="form-control input-sm" id="key-private" placeholder="Private Key"></textarea>
 			</div>
 		</div>
 
 		<h2>Encrypt/Decrypt Messages <small>Using <abbr title="Pretty Good Privacy">PGP</abbr></small></h2>
 		<div class="row">
 			<div class="col-sm-6">
-				<div class="form-group">
-					<textarea class="form-control input-sm" id="msg-in" placholder="Input"></textarea>
-				</div>
+				<textarea class="form-control input-sm" id="msg-in" placholder="Input"></textarea>
 			</div>
 			<div class="col-sm-6">
 				<textarea class="form-control input-sm" id="msg-out" placeholder="Output" readonly></textarea>
@@ -57,13 +55,17 @@
 		<button class="btn btn-default btn-sm" type="button" id="btn-decrypt">Decrypt &amp; Verify</button>
 		&ensp;These actions will use the keys above the message.
 
-		<h2>Symmetrical Encryption <small>Using <abbr title="Stanford Javascript Crypto Library">SJCL</abbr></small></h2>
-		<form class="form-inline">
-			<div class="form-group">
-				<label for="symKey">Encryption Key</label>
-				<input class="form-control input-sm" name="symKey" id="symKey">
+		<h2>Symmetric Key Encryption <small>Using <abbr title="Stanford Javascript Crypto Library">SJCL</abbr></small></h2>
+		<form>
+			<div class="row">
+				<div class="col-xs-6">
+					<label for="symKey">Encryption Key</label>
+				</div>
+				<div class="col-xs-6 text-right">
+					<button class="btn btn-primary btn-sm" type="button" id="btn-symKey">Generate</button>
+				</div>
 			</div>
-			<button class="btn btn-primary btn-sm" type="button" id="btn-symKey">Generate</button>
+			<textarea class="form-control input-sm" name="symKey" id="symKey"></textarea>
 		</form>
 		<br>
 		<div class="row">
@@ -136,7 +138,7 @@
 			var msg = openpgp.message.readArmored($('#msg-in').val());
 			var publicKey = openpgp.key.readArmored($('#key-public').val());
 			var privateKey = openpgp.key.readArmored($('#key-private').val()).keys[0];
-			privateKey.decrypt(prompt('Enter passphrase for key:'));
+			privateKey.decrypt($('#passphrase').val());
 
 			openpgp.decryptAndVerifyMessage(privateKey, publicKey.keys, msg).then(function(data) {
 				var verifyResult = '';
@@ -153,9 +155,9 @@
 
 		// Generate a symetrical encryption key
 		$('#btn-symKey').click(function(e) {
-			var bytes = openpgp.crypto.random.getRandomBytes(128);
-			var hash = openpgp.crypto.hash.digest(openpgp.enums.hash.sha256, bytes);
-			var key = btoa(hash).substr(0, 24);
+			var bytes = openpgp.crypto.random.getRandomBytes(2048);
+			// var hash = openpgp.crypto.hash.digest(openpgp.enums.hash.sha256, bytes);
+			var key = btoa(hash); //.substr(0, 24);
 			$('#symKey').val(key);
 		});
 
